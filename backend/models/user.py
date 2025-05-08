@@ -9,7 +9,7 @@ class User(Base):
     second_name: Mapped[str]
     email: Mapped[str] = mapped_column(unique=True)
     password: Mapped[str]
-    refresh_token: Mapped[str]
+    refresh_token: Mapped[str] = mapped_column(nullable=True)
     travels: Mapped["Travel"] = relationship(back_populates='users', secondary='user_on_travel')
 
     def __repr__(self):

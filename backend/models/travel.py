@@ -1,5 +1,9 @@
 from .base import Base, inpk
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+import uuid
+import os
+
+DOMEN = os.environ.get("DOMEN")
 
 class Travel(Base):
     __tablename__ = "travel"
@@ -13,4 +17,9 @@ class Travel(Base):
     users: Mapped["User"] = relationship(back_populates='travels',
                                          secondary='user_on_travel')
 
+    @classmethod
+    def create(cls, name:str, description:str):
+        return cls(name=name, description=description,
+                   link=f'htts://{DOMEN}/{uuid.uuid4().hex[:10]}',
+                   code=uuid.uuid4().hex[:6].upper())
 
