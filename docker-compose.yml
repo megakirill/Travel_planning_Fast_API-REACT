@@ -2,12 +2,12 @@ services:
   web:
     build: ./backend       # Путь к папке с Dockerfile
     ports:
-      - "5000:5000"
+      - "8000:8000"
     volumes:
-      - ./backend:/app     # Монтирование кода (если нужно)
+      - ./backend:/app/backend     # Монтирование кода (если нужно)
     environment:
-      - DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/travel_db  # Исправлено localhost → db
-      - FLASK_ENV=development
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/travel_db  # Исправлено localhost → db
+      - PYTHONPATH=/
     depends_on:
       - db
   db:

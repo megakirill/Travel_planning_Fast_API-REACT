@@ -13,8 +13,8 @@ class Travel(Base):
     description: Mapped[str]
     link: Mapped[str]
     code: Mapped[str] = mapped_column(unique=True)
-    cards: Mapped["Card"] = relationship(back_populates="travel")
-    users: Mapped["User"] = relationship(back_populates='travels',
+    cards: Mapped[list["Card"]] = relationship(back_populates="travel")
+    users: Mapped[list["User"]] = relationship(back_populates='travels',
                                          secondary='user_on_travel')
 
     @classmethod

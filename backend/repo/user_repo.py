@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Optional
 from backend.models import Travel, UserOnTravel
-from backend.models import User
+from backend.models import User, UserRole
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, join
 from sqlalchemy.orm import joinedload
@@ -8,7 +8,7 @@ import asyncio
 class UserRepository:
 
     @staticmethod
-    async def get_user(session: AsyncSession, id: int) -> User:
+    async def get_user(session: AsyncSession, id: int) -> Optional[User]:
         query = select(User).where(User.id == id)
         result = await session.execute(query)
         return result.scalars().first()
@@ -20,8 +20,14 @@ class UserRepository:
         return result.scalars().first()
 
     @staticmethod
-    async def create_user(session: AsyncSession, name: str, email: str, password: str, second_name: str) -> User:
-        user = User(name=name, email=email, password=password, second_name=second_name)
+    async def get_user_by_login(session: AsyncSession, login: str) -> Optional[User]:
+        query = select(User).where(User.login == login)
+        result = await session.execute(query)
+        return result.scalars().first()
+
+    @staticmethod
+    async def create_user(session: AsyncSession, name: str, email: str, password: str, second_name: str, login: str, role: UserRole) -> User:
+        user = User(name=name, email=email, password=password, second_name=second_name, role=role, login=login)
         session.add(user)
         return user
 
@@ -43,3 +49,9 @@ class UserRepository:
         query = select(Travel).join(UserOnTravel, UserOnTravel.travel_id==Travel.id).where(UserOnTravel.user_id == user_id)
         travels = await session.execute(query)
         return list(travels.scalars().all())
+
+
+
+
+
+

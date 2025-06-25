@@ -38,7 +38,7 @@ class TravelRepository:
         return True
 
     @staticmethod
-    async def get_travels_by_user(session: AsyncSession, user_id: int) -> Optional[list[Travel]|None]:
+    async def get_travels_by_user(session: AsyncSession, user_id: int) -> list[Travel]:
         query = select(Travel).join(UserOnTravel, Travel.id == UserOnTravel.travel_id).options(selectinload(Travel.cards)).where(UserOnTravel.user_id == user_id)
         travels = await session.execute(query)
         travels = travels.scalars().all()
@@ -56,7 +56,7 @@ class TravelRepository:
         await session.delete(user)
 
     @staticmethod
-    async def get_users_in_travel(session: AsyncSession, travel_id: int) -> Optional[list[UserOnTravel]|None]:
+    async def get_users_in_travel(session: AsyncSession, travel_id: int) -> list[UserOnTravel]:
         query = select(Travel).options(selectinload(Travel.users)).where(Travel.id == travel_id)
         travel = await session.execute(query)
         travel = travel.scalar_one_or_none()
