@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Header, HTTPException
+from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.testing.provision import drop_db
 
 from api import api_router
@@ -18,3 +19,5 @@ async def login():
     await init_db()
 
 app.include_router(api_router, prefix="/api")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")

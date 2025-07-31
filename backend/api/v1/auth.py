@@ -4,11 +4,13 @@ from backend.models import get_session
 from backend.schemas import UserWithToken, UserLogin
 from fastapi import Cookie, HTTPException, APIRouter, Depends, Response
 from fastapi.responses import JSONResponse
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 import jwt
 from jwt import PyJWTError
 import os
 from backend.service.user import UserService
-from backend.service.auth import AuthService
+from backend.service.auth import AuthService, security_token
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 @auth_router.post("/login")
@@ -34,20 +36,26 @@ async def login(user: UserLogin, session: AsyncSession = Depends(get_session)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@auth_router.get("/logout")
+async def logout(session: AsyncSession = Depends(get_session)):
+    pass
 
-
-
-
-
-
-
-
-async def get_access_token(token: Annotated[str, Cookie()]):
+@auth_router.get("/get_token")
+async def get_access_token(token: Annotated[HTTPAuthorizationCredentials, Depends(security_token)]):
     try:
-        token = jwt.decode(token, os.getenv('SECRET_KEY'), algorithms=[os.getenv('ALGORITHM')])
+        token = jwt.decode(token.credentials, os.getenv('SECRET_KEY'), algorithms=[os.getenv('ALGORITHM')])
+        print(token)
         return token['sub']
     except PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
+    
+
+
+
+
+
+
+
 
 
 
